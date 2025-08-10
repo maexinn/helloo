@@ -1,122 +1,169 @@
-  <!doctype html>
+ <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>hoyyy</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Fixed — Open The Letter</title>
 <style>
-  body {
-    margin:0; 
-    font-family: 'Segoe UI', sans-serif;
-    background: #ffeef2;
+  :root{
+    --bg:#fff3f6;
+    --env:#ff6b81;
+    --env2:#ff8a9b;
+    --paper:#fff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
     display:flex;
     align-items:center;
     justify-content:center;
-    height:100vh;
-    flex-direction:column;
+    background:var(--bg);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
   }
+
+  /* center area */
+  .scene{
+    width:260px;
+    text-align:center;
+  }
+
+  /* envelope wrapper provides perspective for 3D flip */
   .envelope {
-    width:200px;
+    width:220px;
     height:140px;
-    background:#ff6b81;
+    margin:0 auto;
     position:relative;
     cursor:pointer;
-    border-radius:8px;
-    box-shadow:0 4px 14px rgba(0,0,0,0.2);
-    transition:transform 0.3s ease;
+    border-radius:10px;
+    /* perspective on parent so children 3D transforms look natural */
+    perspective:900px;
   }
-  .envelope:hover {
-    transform: scale(1.05);
+
+  /* body of the envelope */
+  .box {
+    width:100%;
+    height:100%;
+    background:linear-gradient(180deg,var(--env),var(--env2));
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.14);
+    position:relative;
+    overflow:visible;
   }
-  .flap {
+
+  /* flap is a triangle made with clip-path; it will rotate around its top edge */
+  .flap{
     position:absolute;
-    top:0;
     left:0;
-    width:0;
-    height:0;
-    border-left:100px solid transparent;
-    border-right:100px solid transparent;
-    border-bottom:70px solid #ff8a9b;
-    transform-origin:top;
-    transition: transform 0.5s ease;
+    top:0;
+    width:100%;
+    height:88px;
+    background:linear-gradient(135deg,var(--env2),var(--env));
+    /* make the triangle shape */
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    transform-origin: 50% 0%; /* hinge at top center */
+    transition: transform 0.6s cubic-bezier(.22,.8,.3,1);
+    z-index:4;
+    /* important for correct 3D appearance */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
+
+  /* the letter inside */
   .letter {
     position:absolute;
-    top:10px;
-    left:10px;
-    width:180px;
-    height:120px;
-    background:#fff;
-    border-radius:4px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    left:12px;
+    right:12px;
+    top:18px;
+    height:104px;
+    background:var(--paper);
+    border-radius:6px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
     padding:12px;
-    box-sizing:border-box;
-    transform: translateY(100%);
-    transition: transform 0.5s ease;
+    color:#333;
+    transform: translateY(110%);
+    transition: transform 0.5s cubic-bezier(.22,.8,.3,1), opacity 0.3s;
+    z-index:2;
     overflow:auto;
+    font-size:14px;
+    line-height:1.3;
   }
-  .open .flap {
-    transform: rotateX(180deg);
+
+  .title{
+    margin:10px 0 12px 0;
+    font-weight:700;
+    color: #ff6b81;
   }
-  .open .letter {
-    transform: translateY(0);
+
+  /* when envelope has .open, rotate flap upwards (negative rotateX) so it lifts up */
+  .envelope.open .flap{
+    transform: rotateX(-180deg);
   }
-  h2 {
-    margin:0 0 8px;
-    font-size:1.1rem;
-    color:#ff6b81;
+
+  /* slide letter up a little so it's visible */
+  .envelope.open .letter{
+    transform: translateY(6px);
   }
-  p {
-    margin:0;
-    font-size:0.95rem;
-    color:#444;
-    white-space:pre-line;
-  }
+
+  /* hearts */
   .heart {
     position:fixed;
-    color:#ff6b81;
     font-size:20px;
-    animation: float 2s linear forwards;
+    pointer-events:none;
+    animation: float 1400ms linear forwards;
   }
-  @keyframes float {
-    0% {opacity:1; transform: translateY(0);}
-    100% {opacity:0; transform: translateY(-120px);}
+  @keyframes float{
+    from { opacity:1; transform: translateY(0) scale(1); }
+    to   { opacity:0; transform: translateY(-110px) scale(0.9); }
+  }
+
+  /* small hint text */
+  .hint { font-size:13px; color:#7a6b6b; margin-top:12px }
+  @media (max-width:420px){
+    .scene{ width:86vw }
+    .letter{ font-size:13px }
   }
 </style>
 </head>
 <body>
-
-<div class="envelope" id="envelope">
-  <div class="flap"></div>
-  <div class="letter">
-    <h2>babycakes</h2>
-    <p id="confession">goodnighttt mwehehe</p>
-    <p id="confession">sleepwell bestpren mwahaha!</p>
+  <div class="scene">
+    <div class="envelope" id="env">
+      <div class="box">
+        <div class="flap" id="flap"></div>
+        <div class="letter" id="letter">
+          <div class="title">boiii</div>
+          <div id="confessText">imissyouchatmonaakopls</div>
+        </div>
+      </div>
+    </div>
+    <div class="hint">Click / Tap the envelope to open</div>
   </div>
-</div>
 
 <script>
-const envelope = document.getElementById('envelope');
-envelope.addEventListener('click', () => {
-  envelope.classList.toggle('open');
-  if(envelope.classList.contains('open')){
-    releaseHearts();
-  }
-});
+  const env = document.getElementById('env');
 
-function releaseHearts(){
-  for(let i=0;i<12;i++){
-    setTimeout(()=>{
-      const heart = document.createElement('div');
-      heart.className='heart';
-      heart.style.left = (Math.random()*100) + 'vw';
-      heart.style.top = (window.innerHeight - 20) + 'px';
-      heart.textContent = '💖';
-      document.body.appendChild(heart);
-      setTimeout(()=>heart.remove(),2000);
-    }, i*150);
+  env.addEventListener('click', () => {
+    const opened = env.classList.toggle('open');
+    if(opened) releaseHearts();
+  });
+
+  function releaseHearts(){
+    const colors = ['💖','💗','💘','💕','💝'];
+    for(let i=0;i<12;i++){
+      setTimeout(()=>{
+        const h = document.createElement('div');
+        h.className = 'heart';
+        h.textContent = colors[Math.floor(Math.random()*colors.length)];
+        // random starting x near envelope
+        const rect = env.getBoundingClientRect();
+        const x = rect.left + rect.width * (0.2 + Math.random()*0.6);
+        h.style.left = (x) + 'px';
+        h.style.top = (rect.bottom - 8) + 'px';
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(), 1600);
+      }, i*110);
+    }
   }
-}
 </script>
 </body>
 </html>
